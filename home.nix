@@ -24,6 +24,7 @@ with pkgs;
   home.packages = [
     imagemagick
     ripgrep
+    cmark
   ];
 
   programs.fzf = {
