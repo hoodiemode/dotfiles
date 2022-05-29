@@ -38,7 +38,7 @@ with pkgs;
     enable = true;
     disableConfirmationPrompt = true;
   };
-  
+
   programs.emacs = {
     enable = true;
 
@@ -46,41 +46,63 @@ with pkgs;
       (require 'tree-sitter)
       (require 'tree-sitter-langs)
 
-      (add-to-list 'default-frame-alist '(ns-transparent-titlebar . t))
-      (setq ns-use-proxy-icon nil)
-      (setq frame-title-format nil)
+      ; mac-specific
+      (when (eq system-type 'darwin)
+        (add-to-list 'default-frame-alist '(ns-transparent-titlebar . t))
+        (setq ns-use-proxy-icon nil)
+        (setq frame-title-format nil))
 
       (fringe-mode -1)
       (scroll-bar-mode -1)
       (tool-bar-mode -1)
 
-      (setq display-line-numbers-width nil)
-      (global-display-line-numbers-mode)
-      (global-hl-line-mode t)
+      ; tty specific
+      (when (not window-system)
+        (xterm-mouse-mode)
+        (menu-bar-mode -1))
 
-      (custom-set-faces
-        '(default ((t (:family "Iosevka SS07")))))
-
-      (load-theme 'doom-old-hope)
-      (global-tree-sitter-mode t)
-      (add-hook 'tree-sitter-after-on-hook #'tree-sitter-hl-mode)
+      ; gui specific (minimap)
       (when window-system
         (setq minimap-hide-fringes t)
         (setq minimap-window-location 1)
         (setq minimap-minimum-width 10)
         (setq minimap-highlight-line nil)
         (minimap-mode))
+
+      ; line numbers
+      (setq display-line-numbers-width nil)
+      (global-display-line-numbers-mode)
+
+      ; show current line
+      (global-hl-line-mode t)
+
+      ; default buffer font
+      (custom-set-faces
+        '(default ((t (:family "Iosevka SS07")))))
+
+      ; markdown rendering provider
+      (setq markdown-command "cmark")
+
+      ; replace with your default theme of choice
+      (load-theme 'doom-old-hope)
+
+      ; tree sitter should manage syntax highlighting
+      (global-tree-sitter-mode t)
+      (add-hook 'tree-sitter-after-on-hook #'tree-sitter-hl-mode)
+
+      ; feebleline
       (setq feebleline-msg-functions
-        '((feebleline-file-modified-star  :face font-lock-warning-face :align right)
+        '((feebleline-file-modified-star :face font-lock-warning-face :align right)
           (feebleline-line-number         :fmt "%4s" :pre "")
           (feebleline-column-number       :fmt "")
           (feebleline-file-or-buffer-name :face font-lock-keyword-face)
           (feebleline-file-directory      :face feebleline-dir-face :pre "in ")
           (feebleline-git-branch          :face feebleline-git-face)
           (feebleline-project-name        :align right)))
+
       (feebleline-mode)
     '';
-    
+
     extraPackages = epkgs: [
       epkgs.focus
       epkgs.vterm
