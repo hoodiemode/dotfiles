@@ -42,9 +42,27 @@ with pkgs;
   programs.emacs = {
     enable = true;
 
-    extraConfig = ''
+    extraConfig = '';el
       (require 'tree-sitter)
       (require 'tree-sitter-langs)
+      (require 'polymode)
+
+      ; poly-nix-mode
+      (define-hostmode poly-nix-hostmode
+        :mode 'nix-mode)
+
+      (define-innermode poly-nix-elisp-comment-innermode
+        :mode 'emacs-lisp-mode
+        :head-matcher "\'\';el"
+        :tail-matcher "\'\'"
+        :head-mode 'host
+        :tail-mode 'host)
+
+      (define-polymode poly-nix-mode
+        :hostmode 'poly-nix-hostmode
+        :innermodes '(poly-nix-elisp-comment-innermode))
+
+      (add-to-list 'auto-mode-alist '("\\.nix" . poly-nix-mode))
 
       ; mac-specific
       (when (eq system-type 'darwin)
@@ -63,14 +81,14 @@ with pkgs;
 
       ; gui specific (minimap)
       (when window-system
-        (setq minimap-hide-fringes t)
-        (setq minimap-window-location 1)
-        (setq minimap-minimum-width 10)
-        (setq minimap-highlight-line nil)
-        (minimap-mode))
+        (custom-set-faces
+         '(demap-minimap-font-face ((t (:height 30 :family "Minimap")))))
+        (demap-toggle))
+
+      ; indentation
+      (setq indent-tabs-mode nil)
 
       ; line numbers
-      (setq display-line-numbers-width nil)
       (global-display-line-numbers-mode)
 
       ; show current line
@@ -101,6 +119,7 @@ with pkgs;
           (feebleline-project-name        :align right)))
 
       (feebleline-mode)
+      (git-gutter+-mode)
     '';
 
     extraPackages = epkgs: [
@@ -111,13 +130,14 @@ with pkgs;
       epkgs.tree-sitter
       epkgs.tree-sitter-langs
       epkgs.rust-mode
-      epkgs.minimap
+      epkgs.demap
       epkgs.moody
       epkgs.feebleline
       epkgs.rg
       epkgs.magit
       epkgs."git-gutter+"
       epkgs.markdown-mode
+      epkgs.polymode
     ];
   };
 
