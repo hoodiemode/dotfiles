@@ -22,12 +22,22 @@ with pkgs;
   programs.home-manager.enable = true;
 
   home.packages = [
-    tmux
-    fzf
     imagemagick
     ripgrep
   ];
 
+  programs.fzf = {
+    enable = true;
+    enableZshIntegration = true;
+    defaultOptions = [ "-m" ];
+    tmux.enableShellIntegration = true;
+  };
+
+  programs.tmux = {
+    enable = true;
+    disableConfirmationPrompt = true;
+  };
+  
   programs.emacs = {
     enable = true;
 
@@ -83,6 +93,7 @@ with pkgs;
       epkgs.feebleline
       epkgs.rg
       epkgs.magit
+      epkgs."git-gutter+"
     ];
   };
 
