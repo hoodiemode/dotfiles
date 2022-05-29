@@ -94,6 +94,7 @@ with pkgs;
       epkgs.rg
       epkgs.magit
       epkgs."git-gutter+"
+      epkgs.markdown-mode
     ];
   };
 
