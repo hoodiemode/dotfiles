@@ -110,13 +110,13 @@ with pkgs;
 
       ; feebleline
       (setq feebleline-msg-functions
-        '((feebleline-file-modified-star :face font-lock-warning-face :align right)
-          (feebleline-line-number         :fmt "%4s" :pre "")
+        '((feebleline-line-number         :fmt "%4s" :pre "")
           (feebleline-column-number       :fmt "")
+					(feebleline-file-modified-star  :face font-lock-keyword-face :fmt "\u2022")
           (feebleline-file-or-buffer-name :face font-lock-keyword-face)
           (feebleline-file-directory      :face feebleline-dir-face :pre "in ")
           (feebleline-git-branch          :face feebleline-git-face)
-          (feebleline-project-name        :align right)))
+          (feebleline-project-name        :align right))) 
 
       (feebleline-mode)
       (git-gutter+-mode)
