@@ -111,15 +111,19 @@ with pkgs;
       ; feebleline
       (setq feebleline-msg-functions
         '((feebleline-line-number         :fmt "%4s" :pre "")
-          (feebleline-column-number       :fmt "")
-					(feebleline-file-modified-star  :face font-lock-keyword-face :fmt "\u2022")
+					(feebleline-file-modified-star  :face font-lock-keyword-face :fmt "＊")
           (feebleline-file-or-buffer-name :face font-lock-keyword-face)
           (feebleline-file-directory      :face feebleline-dir-face :pre "in ")
-          (feebleline-git-branch          :face feebleline-git-face)
-          (feebleline-project-name        :align right))) 
+          (feebleline-git-branch          :pre " " :align right :post "  ")))
 
-      (feebleline-mode)
-      (git-gutter+-mode)
+			(feebleline-mode)
+
+		  ; git gutter
+			(setq git-gutter+-added-sign "▌")
+			(setq git-gutter+-deleted-sign "▌")
+			(setq git-gutter+-modified-sign "▌")
+
+      (global-git-gutter+-mode)
     '';
 
     extraPackages = epkgs: [
@@ -138,6 +142,7 @@ with pkgs;
       epkgs."git-gutter+"
       epkgs.markdown-mode
       epkgs.polymode
+      epkgs."all-the-icons"
     ];
   };
 
