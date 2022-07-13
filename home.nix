@@ -22,9 +22,13 @@ with pkgs;
   programs.home-manager.enable = true;
 
   home.packages = [
+    rustup
     imagemagick
     ripgrep
     cmark
+    python2
+    neofetch
+    stow
   ];
 
   programs.fzf = {
@@ -47,6 +51,25 @@ with pkgs;
       (require 'tree-sitter-langs)
       (require 'polymode)
 
+			(setq inhibit-startup-message t)
+			(setq inhibit-splash-screen t)
+			(setq inhibit-startup-screen t)
+			
+			; tty specific
+      (when (not window-system)
+        (xterm-mouse-mode)
+				(global-set-key (kbd "<mouse-4>") 'scroll-down-line)
+				(global-set-key (kbd "<mouse-5>") 'scroll-up-line)
+        (menu-bar-mode -1))
+
+      ; gui specific (minimap)
+			(when window-system
+				(menu-bar-mode t)
+				(setq frame-resize-pixelwise t)
+        (custom-set-faces
+         '(demap-minimap-font-face ((t (:height 30 :family "Minimap")))))
+        (demap-toggle))
+
       ; poly-nix-mode
       (define-hostmode poly-nix-hostmode
         :mode 'nix-mode)
@@ -68,22 +91,11 @@ with pkgs;
       (when (eq system-type 'darwin)
         (add-to-list 'default-frame-alist '(ns-transparent-titlebar . t))
         (setq ns-use-proxy-icon nil)
-        (setq frame-title-format nil))
+        (setq frame-title-format "\n")) ; suppress resize information
 
       (fringe-mode -1)
       (scroll-bar-mode -1)
-      (tool-bar-mode -1)
-
-      ; tty specific
-      (when (not window-system)
-        (xterm-mouse-mode)
-        (menu-bar-mode -1))
-
-      ; gui specific (minimap)
-      (when window-system
-        (custom-set-faces
-         '(demap-minimap-font-face ((t (:height 30 :family "Minimap")))))
-        (demap-toggle))
+			(tool-bar-mode -1)
 
       ; indentation
       (setq indent-tabs-mode nil)
@@ -145,12 +157,16 @@ with pkgs;
       epkgs."all-the-icons"
     ];
   };
-
+  
   programs.zsh = {
     enable = true;
+    enableAutosuggestions = true;
+    enableCompletion = true;
+    enableSyntaxHighlighting = true;
     shellAliases = {
       "emacs" = "emacs --no-splash -g 130x44";
     };
+    envExtra = ''PATH="$PATH:/opt/homebrew/bin"'';
   };
 
   programs.zsh.oh-my-zsh = {
