@@ -29,6 +29,8 @@ with pkgs;
     python2
     neofetch
     stow
+    htop
+    jq
   ];
 
   programs.fzf = {
