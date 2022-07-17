@@ -6,6 +6,8 @@
  * If you enjoy this program, please consider donating towards Red Panda conservation efforts.
  */
 
+import { run, dispatch } from 'uebersicht'
+
 // the command output will be split based on this pattern
 const TOKEN = "-*-";
 
@@ -45,7 +47,7 @@ main {
   margin-right: 12px;
 }
 
-.workspaces {
+#workspaces {
   list-style-type: none;
   padding: 0 6px 0 6px;
   margin: 0;
@@ -68,14 +70,14 @@ main {
 }
 
 .cursor {
-  background: #555;
+  background: #fff;
   border-radius: 12px;
   z-index: 0;
   width: 32px;
   height: 100%;
   position: absolute;
   left: 4px;
-  transition: all .2s;
+  transition: all .2s ease-in-out 0s;
 }
 
 /* 29px increments!                                 */
@@ -102,27 +104,77 @@ main {
 }
 `
 
-export const render = ({output}) => {
-  let split = output.split(TOKEN);
-  let {workspaces, time, date} = {
-    workspaces: JSON.parse(split[0]),
-    time: split[1],
-    date: split[2]
+function switchSpace (space) {
+  run(`yabai -m space --focus ${space}`);
+}
+
+export const initialState = {
+  workspaces: [],
+  time: null,
+  date: null,
+  isClockExpanded: false
+};
+
+export const updateState = (event, previousState) => {
+  switch (event.type) {
+  case "UB/COMMAND_RAN":
+    let split = event.output.split(TOKEN);
+    return {
+      ...previousState,
+      workspaces: JSON.parse(split[0]),
+      time: split[1],
+      date: split[2],
+    }
+    break;
+  case "TOGGLE_CLOCK":
+    return {
+      ...previousState,
+      isClockExpanded: !previousState.isClockExpanded 
+    }
+    break;
+  default:
+    return previousState;
+    break;
   }
+}
+
+function Clock (props) {
+  if (props.state.isClockExpanded) {
+    return (
+      <span id="clock">
+	{ props.state.time }
+	on
+	{ props.state.date }
+      </span>
+    )
+  }
+
+  else {
+    return (
+      <span id="clock">
+	{ props.state.time }
+      </span>
+    )
+  }
+}
+
+export const render = (state, dispatch) => {
   return (
     <main>
-      <ul className="workspaces">
+      <ul id="workspaces">
         {
-          workspaces.map(s => {
-	    return <li className={`workspace ${s['is-visible'] ? 'visible' : ''} ${s['is-native-fullscreen'] ? 'fullscreen' : ''}`}>
+          state.workspaces.map((s, n) => {
+	    return <li className={`workspace ${s['is-visible'] ? 'visible' : ''} ${s['is-native-fullscreen'] ? 'fullscreen' : ''}`} onClick={ () => switchSpace(n + 1) }>
 		     { s['is-native-fullscreen'] ? '■' : '●' }
 		   </li>
 	  })
         }
-	<span class="cursor"></span>
+	<span className="cursor"></span>
       </ul>
-      <span class="end">
-	{ time }
+      <span className="end">
+	<span onClick={() => dispatch({ type: "TOGGLE_CLOCK" })}>
+	  <Clock state={state} />
+	</span>
       </span>
     </main>
   );
