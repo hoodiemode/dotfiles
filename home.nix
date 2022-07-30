@@ -2,6 +2,15 @@
 
 with pkgs;
 
+let
+  py-packages = python-packages: with python-packages; [
+    pillow
+    colorz
+    colorthief
+    pywal
+  ];
+  python3-with-packages = python3.withPackages py-packages;
+in
 {
   # Home Manager needs a bit of information about you and the
   # paths it should manage.
@@ -26,12 +35,40 @@ with pkgs;
     imagemagick
     ripgrep
     cmark
+    python3-with-packages
     python2
     neofetch
     stow
     htop
     jq
+    direnv
+    ncmpcpp
+    mpc-cli
   ];
+
+  programs.helix = {
+    enable = true;
+    settings = {
+      theme = "wal";
+      editor = {
+        auto-format = false;
+        rulers = [80];
+        auto-pairs = false;
+        whitespace = {
+          render = {
+            space = "all";
+            tab = "all";
+            newline = "none";
+          };
+        };
+        cursor-shape = {
+          normal = "block";
+          insert = "bar";
+          select = "block";
+        };
+      };
+    };
+  };
 
   programs.fzf = {
     enable = true;
@@ -44,130 +81,12 @@ with pkgs;
     enable = true;
     disableConfirmationPrompt = true;
   };
-
-  programs.emacs = {
-    enable = true;
-
-    extraConfig = '';el
-      (require 'tree-sitter)
-      (require 'tree-sitter-langs)
-      (require 'polymode)
-
-			(setq inhibit-startup-message t)
-			(setq inhibit-splash-screen t)
-			(setq inhibit-startup-screen t)
-			
-			; tty specific
-      (when (not window-system)
-        (xterm-mouse-mode)
-				(global-set-key (kbd "<mouse-4>") 'scroll-down-line)
-				(global-set-key (kbd "<mouse-5>") 'scroll-up-line)
-        (menu-bar-mode -1))
-
-      ; gui specific (minimap)
-			(when window-system
-				(menu-bar-mode t)
-				(setq frame-resize-pixelwise t)
-        (custom-set-faces
-         '(demap-minimap-font-face ((t (:height 30 :family "Minimap")))))
-        (demap-toggle))
-
-      ; poly-nix-mode
-      (define-hostmode poly-nix-hostmode
-        :mode 'nix-mode)
-
-      (define-innermode poly-nix-elisp-comment-innermode
-        :mode 'emacs-lisp-mode
-        :head-matcher "\'\';el"
-        :tail-matcher "\'\'"
-        :head-mode 'host
-        :tail-mode 'host)
-
-      (define-polymode poly-nix-mode
-        :hostmode 'poly-nix-hostmode
-        :innermodes '(poly-nix-elisp-comment-innermode))
-
-      (add-to-list 'auto-mode-alist '("\\.nix" . poly-nix-mode))
-
-      ; mac-specific
-      (when (eq system-type 'darwin)
-        (add-to-list 'default-frame-alist '(ns-transparent-titlebar . t))
-        (setq ns-use-proxy-icon nil)
-        (setq frame-title-format "\n")) ; suppress resize information
-
-      (fringe-mode -1)
-      (scroll-bar-mode -1)
-			(tool-bar-mode -1)
-
-      ; indentation
-      (setq indent-tabs-mode nil)
-
-      ; line numbers
-      (global-display-line-numbers-mode)
-
-      ; show current line
-      (global-hl-line-mode t)
-
-      ; default buffer font
-      (custom-set-faces
-        '(default ((t (:family "Iosevka SS07")))))
-
-      ; markdown rendering provider
-      (setq markdown-command "cmark")
-
-      ; replace with your default theme of choice
-      (load-theme 'doom-old-hope)
-
-      ; tree sitter should manage syntax highlighting
-      (global-tree-sitter-mode t)
-      (add-hook 'tree-sitter-after-on-hook #'tree-sitter-hl-mode)
-
-      ; feebleline
-      (setq feebleline-msg-functions
-        '((feebleline-line-number         :fmt "%4s" :pre "")
-					(feebleline-file-modified-star  :face font-lock-keyword-face :fmt "＊")
-          (feebleline-file-or-buffer-name :face font-lock-keyword-face)
-          (feebleline-file-directory      :face feebleline-dir-face :pre "in ")
-          (feebleline-git-branch          :pre " " :align right :post "  ")))
-
-			(feebleline-mode)
-
-		  ; git gutter
-			(setq git-gutter+-added-sign "▌")
-			(setq git-gutter+-deleted-sign "▌")
-			(setq git-gutter+-modified-sign "▌")
-
-      (global-git-gutter+-mode)
-    '';
-
-    extraPackages = epkgs: [
-      epkgs.focus
-      epkgs.vterm
-      epkgs.nix-mode
-      epkgs.doom-themes
-      epkgs.tree-sitter
-      epkgs.tree-sitter-langs
-      epkgs.rust-mode
-      epkgs.demap
-      epkgs.moody
-      epkgs.feebleline
-      epkgs.rg
-      epkgs.magit
-      epkgs."git-gutter+"
-      epkgs.markdown-mode
-      epkgs.polymode
-      epkgs."all-the-icons"
-    ];
-  };
   
   programs.zsh = {
     enable = true;
     enableAutosuggestions = true;
     enableCompletion = true;
     enableSyntaxHighlighting = true;
-    shellAliases = {
-      "emacs" = "emacs --no-splash -g 130x44";
-    };
     envExtra = ''PATH="$PATH:/opt/homebrew/bin"'';
   };
 

@@ -7,6 +7,8 @@
  */
 
 import { run, dispatch } from 'uebersicht'
+import colors from '/Users/rose/.cache/wal/colors.json'
+import config from './config.json'
 
 // the command output will be split based on this pattern
 const TOKEN = "-*-";
@@ -35,7 +37,7 @@ font-size: 0.9rem;
 main {
   display: flex;
   flex-direction: row;
-  background: #222222;
+  background: ${colors.special.background};
   height: 22px;
   align-items: center;
   color: white;
@@ -45,6 +47,7 @@ main {
   justify-self: flex-end;
   margin-left: auto;
   margin-right: 12px;
+  font-family: "Fantasque Sans Mono"; /* delete this if you're not using a fancy font */
 }
 
 #workspaces {
@@ -62,15 +65,15 @@ main {
 }
 
 .workspace.visible {
-  color: #222222;
+  color: ${colors.special.background};
 }
 
 .workspace.fullscreen {
-  color: #999;
+  color: ${colors.colors.color2};
 }
 
 .cursor {
-  background: #fff;
+  background: ${colors.colors.color1};
   border-radius: 12px;
   z-index: 0;
   width: 32px;
