@@ -10,6 +10,7 @@ let
     pywal
   ];
   python3-with-packages = python3.withPackages py-packages;
+  my-ncmpcpp = ncmpcpp.override { visualizerSupport = true; clockSupport = true; };
 in
 {
   # Home Manager needs a bit of information about you and the
@@ -42,7 +43,7 @@ in
     htop
     jq
     direnv
-    ncmpcpp
+    my-ncmpcpp
     mpc-cli
   ];
 
