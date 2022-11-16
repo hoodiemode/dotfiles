@@ -8,12 +8,26 @@ opt.breakindent = true
 opt.ignorecase = true
 opt.smartcase = true
 opt.updatetime = 250
+opt.tabstop = 2
+opt.shiftwidth = 2
+opt.expandtab = true
+opt.softtabstop = 2
+opt.autoindent = true
+opt.smartindent = true
 opt.clipboard = "unnamedplus"
 
 vim.g.loaded_netrw = 2
 vim.g.loaded_netrwPlugin = 1
 
 vim.cmd("colorscheme nightfox")
+
+-- KEYBINDS
+vim.api.nvim_set_keymap(
+  'n', 
+  '<leader>e',
+  ':NvimTreeToggle<CR>', 
+  { noremap = true, silent = true }
+)
 
 -- PLUGIN SETTINGS
 require 'nvim-tree'.setup()
