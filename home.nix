@@ -7,7 +7,6 @@ let
     pillow
     colorz
     colorthief
-    pywal
   ];
   python3-with-packages = python3.withPackages py-packages;
   my-ncmpcpp = ncmpcpp.override { visualizerSupport = true; clockSupport = true; };
@@ -31,7 +30,7 @@ in
   # Let Home Manager install and manage itself.
   programs.home-manager.enable = true;
 
-  home.packages = [
+  home.packages = with nodePackages; [
     rustup
     imagemagick
     ripgrep
@@ -40,36 +39,18 @@ in
     python2
     neofetch
     stow
-    htop
-    jq
     direnv
     my-ncmpcpp
     mpc-cli
+    bashInteractive
+    gnupg
+    btop
+    tree-sitter
+    # language servers
+    vscode-langservers-extracted
+    bash-language-server
+    rnix-lsp
   ];
-
-  programs.helix = {
-    enable = true;
-    settings = {
-      theme = "wal";
-      editor = {
-        auto-format = false;
-        rulers = [80];
-        auto-pairs = false;
-        whitespace = {
-          render = {
-            space = "all";
-            tab = "all";
-            newline = "none";
-          };
-        };
-        cursor-shape = {
-          normal = "block";
-          insert = "bar";
-          select = "block";
-        };
-      };
-    };
-  };
 
   programs.fzf = {
     enable = true;
@@ -81,18 +62,83 @@ in
   programs.tmux = {
     enable = true;
     disableConfirmationPrompt = true;
-  };
-  
-  programs.zsh = {
-    enable = true;
-    enableAutosuggestions = true;
-    enableCompletion = true;
-    enableSyntaxHighlighting = true;
-    envExtra = ''PATH="$PATH:/opt/homebrew/bin"'';
+    escapeTime = 0;
+    extraConfig = ''
+      set-window-option -g automatic-rename on
+      set-option -g set-titles on
+      setw -g mouse on
+      
+      # statusbar
+      set -g status-position bottom
+      set -g status-justify left
+      set -g status-style 'fg=black'
+      set -g status-left \'\'
+      set -g status-right \'\'
+      set -g status-right-length 50
+      set -g status-left-length 20
+        
+      setw -g window-status-current-style 'fg=black'
+      setw -g window-status-current-format ' #[bg=red, fg=black] #I #[bg=brightwhite, fg=black] #W #F #[bg=default]'
+      
+      setw -g window-status-style 'fg=black, bg=gray'
+      setw -g window-status-format ' #I #F '
+      
+      setw -g window-status-bell-style 'fg=white'
+    '';
   };
 
-  programs.zsh.oh-my-zsh = {
+  programs.bash = {
     enable = true;
-    theme = "philips";
+    sessionVariables = { 
+      PATH = "$PATH:/opt/homebrew/bin:/opt/homebrew/opt/llvm@12/bin:$HOME/.cargo/bin:$HOME/.ghcup/bin:$HOME/Library/Python/3.8/bin"; 
+    };
+    shellAliases = {
+      ls = "ls -FG";
+      htop = "btop";
+      firefox = "/Applications/Firefox.app/Contents/MacOS/firefox";
+      code = "'/Applications/Visual\ Studio\ Code.app/Contents/Resources/app/bin/code'";
+    };
+    # profileExtra = "wal -Rn > /dev/null";
+  };
+
+  programs.starship = {
+    enable = true;
+    settings = {
+      add_newline = false;
+    };
+  };
+
+  programs.neovim = {
+    enable = true;
+    extraConfig = "luafile $HOME/.config/nvim/lua/init.lua";
+    viAlias = true;
+    vimAlias = true;
+    vimdiffAlias = true;
+    plugins = with pkgs.vimPlugins; [ 
+      goyo-vim
+      limelight-vim
+      nightfox-nvim
+      nvim-treesitter
+      vim-nix
+      indentLine
+      nvim-lspconfig
+      nvim-cmp
+      nvim-web-devicons
+      nvim-tree-lua
+    ];
+  };
+
+  programs.urxvt = {
+    enable = true;
+    iso14755 = true;
+    scroll = {
+      bar = {
+        enable = false;
+      };
+    };
+  };
+
+  programs.feh = {
+    enable = true;
   };
 }
