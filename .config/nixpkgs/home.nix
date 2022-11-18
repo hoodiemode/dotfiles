@@ -45,7 +45,9 @@ in
     bashInteractive
     gnupg
     btop
+    exa
     tree-sitter
+    ranger
     # language servers
     vscode-langservers-extracted
     bash-language-server
@@ -91,6 +93,10 @@ in
     enable = true;
     sessionVariables = { 
       PATH = "$PATH:/opt/homebrew/bin:/opt/homebrew/opt/llvm@12/bin:$HOME/.cargo/bin:$HOME/.ghcup/bin:$HOME/Library/Python/3.8/bin"; 
+      EDITOR = "nvim";
+      DOTFILES = "$HOME/.files";
+      NVIM_INIT_LUA = "$DOTFILES/.config/nvim/lua/init.lua";
+      HOME_NIX = "$DOTFILES/.config/nixpkgs/home.nix";
     };
     shellAliases = {
       ls = "ls -FG";
@@ -125,6 +131,8 @@ in
       nvim-cmp
       nvim-web-devicons
       nvim-tree-lua
+      lualine-nvim
+      lualine-lsp-progress
     ];
   };
 
