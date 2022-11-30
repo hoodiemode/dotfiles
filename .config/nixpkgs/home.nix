@@ -129,6 +129,9 @@ in
       indentLine
       nvim-lspconfig
       nvim-cmp
+      cmp-nvim-lsp
+      cmp-vsnip
+      vim-vsnip
       nvim-web-devicons
       nvim-tree-lua
       lualine-nvim
